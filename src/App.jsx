@@ -7,14 +7,11 @@ import Profile from "./pages/Profile";
 import Services from "./pages/Services";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
-
 function App() {
   return (
     <Router>
       <div className="flex">
         <Sidebar />
-
-        
         <div className="flex-1 p-6">
           <Routes>
             <Route path="/" element={<Home />} />
