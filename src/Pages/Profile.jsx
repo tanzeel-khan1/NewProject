@@ -3,7 +3,6 @@ import SignUp from "./SignUp";
 
 const Profile = () => {
   const [username, setUsername] = useState(localStorage.getItem("username"));
-
   useEffect(() => {
     const handleStorage = () => {
       setUsername(localStorage.getItem("username"));
