@@ -32,10 +32,8 @@ const Profile = () => {
             {username.charAt(0).toUpperCase()}
           </div>
         </div>
-
         <h1 className="text-2xl font-bold text-gray-800">Welcome</h1>
         <p className="text-lg text-gray-600 mt-1">{username} 🎉</p>
-
         <div className="mt-6">
           <button
             onClick={handleLogout}

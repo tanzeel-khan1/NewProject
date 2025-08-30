@@ -33,7 +33,6 @@ const SignUp = () => {
       const data = await res.json();
       console.log("Signup success:", data);
 
-      // username ko localStorage me save kar lo
       localStorage.setItem("username", data.username || form.username);
 
       // ✅ Page reload ya navigate karne ki zarurat nahi

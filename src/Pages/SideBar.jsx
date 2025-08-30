@@ -19,7 +19,6 @@ const Sidebar = () => {
         open ? "w-64" : "w-20"
       }`}
     >
-      {/* Top Section */}
       <div className="flex items-center justify-between px-3 py-4 border-b">
         <div className="flex items-center">
           {open && <span className="mr-4 text-lg font-bold">Brand</span>}
@@ -33,7 +32,6 @@ const Sidebar = () => {
         </button>
       </div>
 
-      {/* Menu */}
       <nav className="mt-6 flex flex-col space-y-4 px-2">
         {menuItems.map((item, index) => (
           <NavLink

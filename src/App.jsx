@@ -27,7 +27,6 @@ function App() {
           </div>
         </div>
       </Router>
-      {/* Add React Query Devtools here */}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
