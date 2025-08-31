@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import Nav from "./Nav";
 
 const About = () => {
   const highlights = [
@@ -18,6 +19,8 @@ const About = () => {
   ];
 
   return (
+    <>
+    <Nav/>
     <div className="min-h-screen bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center p-8">
       <motion.div
         initial={{ opacity: 0, y: 40 }}
@@ -69,6 +72,7 @@ const About = () => {
         </div>
       </motion.div>
     </div>
+    </>
   );
 };
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import Nav from "./Nav";
 
 const Services = () => {
   const services = [
@@ -26,6 +27,8 @@ const Services = () => {
   ];
 
   return (
+    <>
+    <Nav/>
     <div className="min-h-screen rounded-md bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex flex-col items-center justify-center text-white p-8">
       {/* Heading */}
       <motion.h1
@@ -59,6 +62,8 @@ const Services = () => {
         ))}
       </div>
     </div>
+        </>
+
   );
 };
 
