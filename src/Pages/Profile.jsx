@@ -1,138 +1,166 @@
-import React, { useEffect, useState } from "react";
-import { LogOut, Settings, BarChart3, Crown } from "lucide-react";
-import Nav from "./Nav";
+import React, { useState, useEffect } from "react";
+import { LogOut, Settings, BarChart3, Crown, Edit3, User } from "lucide-react";
+
+const usePersistedUsername = () => {
+  const [username, setUsername] = useState(() => {
+    // reload ke baad bhi localStorage se data mil jaye
+    return localStorage.getItem("username") || null;
+  });
+
+  const saveUsername = (name) => {
+    localStorage.setItem("username", name); // permanent save
+    setUsername(name);
+  };
+
+  const clearUsername = () => {
+    localStorage.removeItem("username"); // remove on logout
+    setUsername(null);
+  };
+
+  return [username, saveUsername, clearUsername];
+};
 
 const SignUp = ({ onSignUp }) => {
   const [name, setName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = () => {
-    if (name.trim()) {
-      onSignUp(name.trim());
+    if (name.trim().length >= 2) {
+      setIsLoading(true);
+      setTimeout(() => {
+        onSignUp(name.trim());
+        setIsLoading(false);
+      }, 1000);
     }
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") handleSubmit();
+  };
+
   return (
-    <>
-    <div className="mt-4 w-full max-w-md mx-auto">
-      <div className="bg-white/10 backdrop-blur-xl border border-white/20 p-8 rounded-3xl shadow-2xl">
+    <div className="w-full max-w-lg mx-auto">
+      <div className="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl shadow-xl">
         <div className="text-center mb-8">
-          <div className="w-20 h-20 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-xl">
-            <span className="text-3xl text-white font-bold">👤</span>
+          <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-500 to-purple-500 flex items-center justify-center shadow-lg">
+            <User className="w-10 h-10 text-white" />
           </div>
-          <h2 className="text-3xl font-bold text-white mb-2">Welcome</h2>
-          <p className="text-white/80">Enter your name to continue</p>
+          <h2 className="text-3xl font-bold text-white mb-2">Welcome!</h2>
+          <p className="text-white/80 text-lg">Create your profile to get started</p>
         </div>
 
         <div className="space-y-6">
-          <input
-            type="text"
-            placeholder="Enter your name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full px-6 py-4 rounded-2xl bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-purple-400 text-lg"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Enter your name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              onKeyPress={handleKeyPress}
+              className="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/50 focus:outline-none focus:border-blue-400 text-lg transition-colors"
+            />
+            <Edit3 className="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-white/50" />
+          </div>
 
           <button
             onClick={handleSubmit}
-            className="w-full cursor-pointer bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 hover:from-blue-600 hover:via-purple-600 hover:to-pink-600 text-white py-4 px-6 rounded-2xl font-bold text-lg shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+            disabled={name.trim().length < 2 || isLoading}
+            className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 px-6 rounded-xl font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
           >
-            Get Started
+            {isLoading ? (
+              <div className="flex items-center justify-center space-x-2">
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Creating...</span>
+              </div>
+            ) : (
+              "Create Profile"
+            )}
           </button>
+
+          <div className="text-center">
+            <span
+              className={`text-sm transition-colors ${
+                name.length >= 2 ? "text-green-300" : "text-white/50"
+              }`}
+            >
+              {name.length >= 2 ? "✓ Ready to go" : `${name.length}/2 characters minimum`}
+            </span>
+          </div>
         </div>
       </div>
     </div>
-        </>
-
   );
 };
 
 const Profile = () => {
-  const [username, setUsername] = useState(localStorage.getItem("username"));
+  const [username, saveUsername, clearUsername] = usePersistedUsername();
+  const [isLoading, setIsLoading] = useState(false);
 
-  useEffect(() => {
-    const handleStorage = () => {
-      setUsername(localStorage.getItem("username"));
-    };
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
-
-  const handleSignUp = (name) => {
-    localStorage.setItem("username", name);
-    setUsername(name);
-  };
+  const handleSignUp = (name) => saveUsername(name);
 
   const handleLogout = () => {
-    localStorage.removeItem("username");
-    setUsername(null);
+    setIsLoading(true);
+    setTimeout(() => {
+      clearUsername();
+      setIsLoading(false);
+    }, 1000);
   };
 
   if (!username) {
     return (
-      <div className="mt-3 min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 flex items-center justify-center p-4">
         <SignUp onSignUp={handleSignUp} />
       </div>
     );
   }
 
   return (
-    <>
-        <Nav/>
-
-    <div className="mt-3 min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
-      <div className="w-full max-w-lg">
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden">
-          {/* Header */}
-          <div className="relative text-center p-10 bg-gradient-to-br from-purple-500/20 to-pink-500/20 border-b border-white/10">
-            <div className="relative mx-auto mb-6">
-              <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-pink-500 via-purple-500 to-blue-500 flex items-center justify-center text-white text-5xl font-bold shadow-xl transform rotate-6 hover:rotate-0 transition-all duration-500">
-                {username.charAt(0).toUpperCase()}
-              </div>
-              <span className="absolute -top-3 -right-3 w-8 h-8 bg-green-400 rounded-full border-4 border-white shadow-lg animate-pulse"></span>
-            </div>
-            <h1 className="text-4xl font-bold text-white mb-2">Hello,</h1>
-            <p className="text-2xl text-purple-200 font-semibold">{username} 🎉</p>
-            <div className="inline-block mt-3 bg-gradient-to-r from-yellow-400 via-pink-400 to-orange-400 text-black px-4 py-1 rounded-full text-sm font-bold shadow-md">
-              <Crown className="inline w-4 h-4 mr-1" /> Premium Member
-            </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900 p-4">
+      <div className="max-w-6xl mx-auto mt-10 bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl overflow-hidden">
+        <div className="text-center p-8 sm:p-12 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-b border-white/10">
+          <div className="w-24 h-24 rounded-full bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center text-white text-4xl font-bold mx-auto mb-6">
+            {username.charAt(0).toUpperCase()}
           </div>
+          <h1 className="text-3xl sm:text-5xl font-bold text-white mb-2">Welcome back,</h1>
+          <p className="text-2xl sm:text-4xl font-bold bg-gradient-to-r from-purple-300 to-blue-300 bg-clip-text text-transparent mb-4">
+            {username}!
+          </p>
+        </div>
 
-          {/* Stats - FLEX */}
-          <div className="flex flex-col sm:flex-row gap-5 p-8">
-            <div className="flex-1 bg-gradient-to-br from-blue-500/20 to-purple-500/20 p-5 rounded-2xl border border-blue-400/30 shadow-lg hover:scale-105 transition-all text-center">
-              <div className="text-4xl mb-2">🏆</div>
-              <p className="text-white font-bold text-lg">Level 1</p>
-              <p className="text-white/70 text-sm">Achievements</p>
-            </div>
-            <div className="flex-1 bg-gradient-to-br from-purple-500/20 to-pink-500/20 p-5 rounded-2xl border border-pink-400/30 shadow-lg hover:scale-105 transition-all text-center">
-              <div className="text-4xl mb-2">⭐</div>
-              <p className="text-white font-bold text-lg">4.9</p>
-              <p className="text-white/70 text-sm">Rating</p>
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="space-y-4 px-8 pb-8">
-            <button className="w-full cursor-not-allowed bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-sm text-white py-4 px-6 rounded-2xl font-bold text-lg shadow-md transition-all flex items-center justify-center space-x-3">
+        {/* Actions */}
+        <div className="p-6 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <button className=" cursor-not-allowed bg-white/10 hover:bg-white/20 border border-white/30 text-white py-4 px-6 rounded-xl flex items-center justify-center space-x-3">
               <Settings className="w-6 h-6" />
-              <span>Edit Profile</span>
+              <span>Settings</span>
             </button>
-            <button className="cursor-not-allowed w-full bg-white/10 hover:bg-white/20 border border-white/30 backdrop-blur-sm text-white py-4 px-6 rounded-2xl font-bold text-lg shadow-md transition-all flex items-center justify-center space-x-3">
+
+            <button className="bg-white/10 cursor-not-allowed hover:bg-white/20 border border-white/30 text-white py-4 px-6 rounded-xl flex items-center justify-center space-x-3">
               <BarChart3 className="w-6 h-6" />
-              <span>View Stats</span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className="cursor-pointer w-full bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 text-white py-4 px-6 rounded-2xl font-bold text-lg shadow-xl hover:scale-105 transition-all flex items-center justify-center space-x-3"
-            >
-              <LogOut className="w-6 h-6" />
-              <span>Logout</span>
+              <span>Analytics</span>
             </button>
           </div>
+
+          <button
+            onClick={handleLogout}
+            disabled={isLoading}
+            className="w-full cursor-pointer bg-gradient-to-r from-red-500 to-pink-500 text-white py-4 px-6 rounded-xl font-semibold flex items-center justify-center space-x-3 disabled:opacity-50"
+          >
+            {isLoading ? (
+              <>
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                <span>Signing out...</span>
+              </>
+            ) : (
+              <>
+                <LogOut className="w-6 h-6" />
+                <span>Sign Out</span>
+              </>
+            )}
+          </button>
         </div>
       </div>
     </div>
-    </>
   );
 };
 
